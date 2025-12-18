@@ -1,0 +1,2 @@
+// Frontend-specific types
+
