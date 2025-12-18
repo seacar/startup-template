@@ -6,7 +6,11 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Startup Template 2026",
-  description: "Production-ready full-stack startup template with modern technologies",
+  description:
+    "Production-ready full-stack startup template with modern technologies",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({
@@ -20,4 +24,3 @@ export default function RootLayout({
     </html>
   );
 }
-

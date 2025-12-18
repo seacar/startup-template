@@ -1,35 +1,41 @@
-import { View, Text, ScrollView, Linking, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Linking,
+  TouchableOpacity,
+} from "react-native";
 
 export default function Index() {
   const services = [
     {
       name: "Backend API",
-      url: "http://localhost:8000",
+      url: "http://localhost:18000",
       description: "FastAPI backend with Uvicorn",
     },
     {
       name: "API Documentation",
-      url: "http://localhost:8000/docs",
+      url: "http://localhost:18000/docs",
       description: "Scalar API documentation",
     },
     {
       name: "Health Check",
-      url: "http://localhost:8000/health",
+      url: "http://localhost:18000/health",
       description: "Backend health status endpoint",
     },
     {
       name: "Supabase Studio",
-      url: "http://127.0.0.1:54323",
+      url: "http://127.0.0.1:58423",
       description: "Database management interface",
     },
     {
       name: "Supabase API",
-      url: "http://127.0.0.1:54321",
+      url: "http://127.0.0.1:58421",
       description: "Supabase REST API",
     },
     {
       name: "Email Testing",
-      url: "http://127.0.0.1:54324",
+      url: "http://127.0.0.1:58424",
       description: "View test emails sent locally",
     },
   ];
@@ -44,7 +50,9 @@ export default function Index() {
   ];
 
   const handlePress = (url: string) => {
-    Linking.openURL(url).catch((err) => console.error("Failed to open URL:", err));
+    Linking.openURL(url).catch((err) =>
+      console.error("Failed to open URL:", err)
+    );
   };
 
   return (
@@ -68,7 +76,9 @@ export default function Index() {
           {technologies.map((tech, techIndex) => (
             <View
               key={tech.category}
-              className={`bg-white rounded-lg shadow-sm p-4 border border-gray-200 ${techIndex < technologies.length - 1 ? 'mb-4' : ''}`}
+              className={`bg-white rounded-lg shadow-sm p-4 border border-gray-200 ${
+                techIndex < technologies.length - 1 ? "mb-4" : ""
+              }`}
             >
               <Text className="text-lg font-semibold text-gray-900 mb-2">
                 {tech.category}
@@ -96,7 +106,9 @@ export default function Index() {
             <TouchableOpacity
               key={service.name}
               onPress={() => handlePress(service.url)}
-              className={`bg-white rounded-lg shadow-sm p-4 border border-gray-200 active:bg-gray-50 ${serviceIndex < services.length - 1 ? 'mb-3' : ''}`}
+              className={`bg-white rounded-lg shadow-sm p-4 border border-gray-200 active:bg-gray-50 ${
+                serviceIndex < services.length - 1 ? "mb-3" : ""
+              }`}
             >
               <Text className="text-lg font-semibold text-gray-900 mb-1">
                 {service.name}

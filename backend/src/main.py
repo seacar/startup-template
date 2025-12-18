@@ -39,7 +39,13 @@ def create_app() -> FastAPI:
     )
 
     # Sentry integration
-    if settings.SENTRY_DSN:
+    # Only initialize if we have a real DSN (not empty or placeholder)
+    if (
+        settings.SENTRY_DSN 
+        and settings.SENTRY_DSN.strip() 
+        and not settings.SENTRY_DSN.startswith("your_")
+        and settings.SENTRY_DSN.startswith("https://")
+    ):
         sentry_sdk.init(
             dsn=settings.SENTRY_DSN,
             integrations=[FastApiIntegration()],
@@ -62,7 +68,12 @@ def create_app() -> FastAPI:
     )
 
     # API documentation with Scalar
-    app.get("/docs", include_in_schema=False)(get_scalar_api_reference(app=app))
+    @app.get("/docs", include_in_schema=False)
+    async def scalar_html():
+        return get_scalar_api_reference(
+            openapi_url=app.openapi_url,
+            title=app.title,
+        )
 
     # Routers
     app.include_router(health.router, tags=["Health"])

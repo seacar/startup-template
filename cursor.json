@@ -1,0 +1,19 @@
+{
+  "rules": [
+    "This is a full-stack startup template with backend (Python/FastAPI), frontend (Next.js/TypeScript), mobile (React Native), and Supabase.",
+    "Follow the existing code patterns and structure in each directory.",
+    "Use TypeScript for frontend and mobile code, Python for backend code.",
+    "Maintain consistency with existing naming conventions and file organization.",
+    "Any documentation created aside from README.md and SETUP.md must be added to the documentation folder as markdown files."
+  ],
+  "exclude": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/__pycache__/**",
+    "**/.venv/**",
+    "**/venv/**",
+    "**/.git/**"
+  ]
+}

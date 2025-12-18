@@ -2,6 +2,8 @@
 
 A production-ready, full-stack startup template based on optimal tech stack for 2026.
 
+> **Note:** Supabase authentication middleware is **disabled by default** to allow immediate deployment of the landing page. See `frontend/SUPABASE_SETUP.md` for instructions to enable it when needed.
+
 ## Stack Overview
 
 - **Backend**: FastAPI + Uvicorn + Supabase + Railway
@@ -31,6 +33,37 @@ startup-template/
 
 ## Getting Started
 
+### Quick Start (All Services)
+
+Start all services with a single command:
+
+```bash
+./start.sh
+```
+
+This script will:
+
+1. Check prerequisites (Docker, Python, Node.js)
+2. **Automatically handle port conflicts** - If ports are in use, it finds available ports and updates all configuration files
+3. Start Supabase local instance
+4. **Display Supabase keys** - Shows API URL, Publishable Key, and Secret Key for easy copy-paste
+5. Start Backend API (FastAPI + Uvicorn)
+6. Start Frontend (Next.js)
+
+**Port Conflict Handling:**
+
+- Automatically detects if ports are in use (especially useful for multiple Supabase projects)
+- Finds next available ports if conflicts detected
+- Updates `supabase/config.toml` with new ports
+- Updates all `.env` and `.env.example` files with new Supabase URLs
+- Displays updated service URLs
+
+To start the mobile app separately:
+
+```bash
+./start-mobile.sh
+```
+
 ### Prerequisites
 
 - Python 3.11+
@@ -51,11 +84,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 # Configure your environment variables in .env file
 # Run with uvicorn (ASGI server)
-uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn src.main:app --reload --host 0.0.0.0 --port 18000
 ```
 
-The API will be available at `http://localhost:8000`
-API documentation (Scalar) will be at `http://localhost:8000/docs`
+The API will be available at `http://localhost:18000`
+API documentation (Scalar) will be at `http://localhost:18000/docs`
 
 ### Frontend Setup
 
@@ -88,11 +121,11 @@ Supabase migrations are located in `supabase/migrations/` and will run automatic
 
 ## Environment Variables
 
-Each service has its own environment configuration:
+Each service has its own `.env.example` file. Copy and configure:
 
-- `backend/.env` - Backend, AI/ML, and ETL configuration (see backend/.env.example for reference)
-- `frontend/env.example` → `frontend/.env.local`
-- `mobile/env.example` → `mobile/.env`
+- `backend/.env.example` → `backend/.env` - Backend, AI/ML, and ETL configuration
+- `frontend/.env.example` → `frontend/.env.local` - Frontend configuration
+- `mobile/.env.example` → `mobile/.env` - Mobile configuration
 
 ## Deployment
 

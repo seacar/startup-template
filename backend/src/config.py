@@ -1,4 +1,8 @@
 """Application configuration."""
+import json
+from typing import Any
+
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,15 +25,48 @@ class Settings(BaseSettings):
 
     # Server
     HOST: str = "0.0.0.0"
-    PORT: int = 8000
+    PORT: int = 18000
 
-    # CORS
-    CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:3001"]
+    # CORS - use Any type to prevent automatic JSON parsing, then validate
+    CORS_ORIGINS: Any = Field(
+        default=["http://localhost:13000", "http://localhost:13001"]
+    )
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v: Any) -> list[str]:
+        """Parse CORS_ORIGINS from env var - supports JSON array or comma-separated string."""
+        # If already a list, return it
+        if isinstance(v, list):
+            return [str(item) for item in v]
+        
+        # If it's a string, parse it
+        if isinstance(v, str):
+            # Handle empty string
+            if not v.strip():
+                return ["http://localhost:13000", "http://localhost:13001"]
+            
+            # Try parsing as JSON first
+            try:
+                parsed = json.loads(v)
+                if isinstance(parsed, list):
+                    return [str(item) for item in parsed]
+            except (json.JSONDecodeError, TypeError, ValueError):
+                # Not JSON, treat as comma-separated string
+                pass
+            
+            # Parse as comma-separated string
+            origins = [origin.strip() for origin in v.split(",") if origin.strip()]
+            if origins:
+                return origins
+        
+        # Default fallback
+        return ["http://localhost:13000", "http://localhost:13001"]
 
     # Supabase
     SUPABASE_URL: str = ""
-    SUPABASE_KEY: str = ""
-    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    SUPABASE_PUBLISHABLE_KEY: str = ""
+    SUPABASE_SECRET_KEY: str = ""
 
     # Redis (Upstash)
     REDIS_URL: str = ""
@@ -51,7 +88,7 @@ class Settings(BaseSettings):
 
     # ETL - Supabase PostgreSQL
     SUPABASE_DB_HOST: str = ""
-    SUPABASE_DB_PORT: int = 5432
+    SUPABASE_DB_PORT: int = 58422
     SUPABASE_DB_NAME: str = ""
     SUPABASE_DB_USER: str = ""
     SUPABASE_DB_PASSWORD: str = ""

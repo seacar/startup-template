@@ -8,7 +8,7 @@ from src.config import settings
 
 def get_vector_store(table_name: str = "documents") -> SupabaseVectorStore:
     """Get Supabase vector store instance."""
-    supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
+    supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SECRET_KEY)
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001",
         google_api_key=settings.GOOGLE_API_KEY,
