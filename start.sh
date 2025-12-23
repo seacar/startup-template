@@ -23,6 +23,8 @@ DEFAULT_SUPABASE_SHADOW_PORT=58420
 DEFAULT_SUPABASE_POOLER_PORT=58429
 DEFAULT_BACKEND_PORT=18000
 DEFAULT_FRONTEND_PORT=13000
+DEFAULT_REDIS_PORT=6379
+DEFAULT_SRH_PORT=8079
 
 # Ports (will be adjusted if conflicts detected)
 SUPABASE_API_PORT=$DEFAULT_SUPABASE_API_PORT
@@ -34,6 +36,9 @@ SUPABASE_SHADOW_PORT=$DEFAULT_SUPABASE_SHADOW_PORT
 SUPABASE_POOLER_PORT=$DEFAULT_SUPABASE_POOLER_PORT
 BACKEND_PORT=$DEFAULT_BACKEND_PORT
 FRONTEND_PORT=$DEFAULT_FRONTEND_PORT
+REDIS_PORT=$DEFAULT_REDIS_PORT
+SRH_PORT=$DEFAULT_SRH_PORT
+SRH_TOKEN="local_dev_token"
 
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -345,6 +350,22 @@ check_and_adjust_ports() {
         PORTS_CHANGED=true
     fi
     
+    # Check Redis port
+    if port_in_use $REDIS_PORT; then
+        print_warning "Port $REDIS_PORT (Redis) is in use"
+        REDIS_PORT=$(find_available_port $REDIS_PORT)
+        print_status "Using port $REDIS_PORT for Redis instead"
+        PORTS_CHANGED=true
+    fi
+    
+    # Check SRH port
+    if port_in_use $SRH_PORT; then
+        print_warning "Port $SRH_PORT (SRH) is in use"
+        SRH_PORT=$(find_available_port $SRH_PORT)
+        print_status "Using port $SRH_PORT for SRH instead"
+        PORTS_CHANGED=true
+    fi
+    
     if [ "$PORTS_CHANGED" = true ]; then
         print_warning "Port conflicts detected. Updating configuration files..."
         update_supabase_config
@@ -419,6 +440,91 @@ wait_for_service() {
     echo ""
     print_warning "$service_name may not be ready yet"
     return 1
+}
+
+# Function to start Redis and SRH via docker compose
+start_redis() {
+    print_status "Starting Redis and SRH (Serverless Redis HTTP) via Docker Compose..."
+    
+    # Check if docker-compose.yml exists
+    if [ ! -f "docker-compose.yml" ]; then
+        print_error "docker-compose.yml not found"
+        return 1
+    fi
+    
+    # Check if Redis container is already running
+    local redis_running=false
+    if docker ps --format "{{.Names}}" | grep -q "^startup-template-redis$"; then
+        print_status "Redis container is already running"
+        redis_running=true
+    fi
+    
+    # Check if SRH container is already running
+    local srh_running=false
+    if docker ps --format "{{.Names}}" | grep -q "^startup-template-srh$"; then
+        print_status "SRH container is already running"
+        srh_running=true
+    fi
+    
+    # Export environment variables for docker compose to use
+    export REDIS_PORT=$REDIS_PORT
+    export SRH_PORT=$SRH_PORT
+    export SRH_TOKEN=$SRH_TOKEN
+    
+    # Try docker compose first (newer Docker versions), fallback to docker-compose
+    local compose_cmd="docker compose"
+    if ! docker compose version > /dev/null 2>&1; then
+        if command_exists docker-compose; then
+            compose_cmd="docker-compose"
+        else
+            print_error "Neither docker compose nor docker-compose found"
+            return 1
+        fi
+    fi
+    
+    # Start Redis and SRH using docker compose
+    if $compose_cmd up -d redis serverless-redis-http 2>&1; then
+        print_success "Redis and SRH containers started"
+        
+        # Wait for Redis to be ready
+        if [ "$redis_running" = false ]; then
+            print_status "Waiting for Redis to be ready..."
+            local max_attempts=30
+            local attempt=1
+            while [ $attempt -le $max_attempts ]; do
+                if docker exec startup-template-redis redis-cli ping > /dev/null 2>&1; then
+                    print_success "Redis is ready!"
+                    break
+                fi
+                echo -n "."
+                sleep 1
+                attempt=$((attempt + 1))
+            done
+            echo ""
+        fi
+        
+        # Wait for SRH to be ready
+        if [ "$srh_running" = false ]; then
+            print_status "Waiting for SRH to be ready..."
+            local max_attempts=30
+            local attempt=1
+            while [ $attempt -le $max_attempts ]; do
+                if curl -s -f "http://localhost:$SRH_PORT/health" > /dev/null 2>&1; then
+                    print_success "SRH is ready!"
+                    break
+                fi
+                echo -n "."
+                sleep 1
+                attempt=$((attempt + 1))
+            done
+            echo ""
+        fi
+        
+        return 0
+    else
+        print_error "Failed to start Redis/SRH containers"
+        return 1
+    fi
 }
 
 # Function to get Supabase keys
@@ -545,6 +651,28 @@ update_env_files() {
             fi
         fi
         
+        # Update or add REDIS_REST_URL and REDIS_REST_TOKEN (for Upstash compatibility via SRH)
+        local redis_rest_url="http://localhost:$SRH_PORT"
+        if grep -q "^REDIS_REST_URL=" "$backend_env"; then
+            sed -i.tmp "s|^REDIS_REST_URL=.*|REDIS_REST_URL=$redis_rest_url|" "$backend_env"
+        else
+            echo "REDIS_REST_URL=$redis_rest_url" >> "$backend_env"
+        fi
+        
+        if grep -q "^REDIS_REST_TOKEN=" "$backend_env"; then
+            sed -i.tmp "s|^REDIS_REST_TOKEN=.*|REDIS_REST_TOKEN=$SRH_TOKEN|" "$backend_env"
+        else
+            echo "REDIS_REST_TOKEN=$SRH_TOKEN" >> "$backend_env"
+        fi
+        
+        # Keep REDIS_URL as fallback (for direct Redis connection if needed)
+        local redis_url="redis://localhost:$REDIS_PORT"
+        if grep -q "^REDIS_URL=" "$backend_env"; then
+            sed -i.tmp "s|^REDIS_URL=.*|REDIS_URL=$redis_url|" "$backend_env"
+        else
+            echo "REDIS_URL=$redis_url" >> "$backend_env"
+        fi
+        
         # Update PORT if needed
         if grep -q "^PORT=" "$backend_env"; then
             sed -i.tmp "s|^PORT=.*|PORT=$BACKEND_PORT|" "$backend_env"
@@ -602,6 +730,20 @@ update_env_files() {
 # Cleanup function
 cleanup() {
     print_status "Shutting down services..."
+    
+    # Stop Redis and SRH
+    if [ -f "docker-compose.yml" ]; then
+        print_status "Stopping Redis and SRH..."
+        local compose_cmd="docker compose"
+        if ! docker compose version > /dev/null 2>&1; then
+            if command_exists docker-compose; then
+                compose_cmd="docker-compose"
+            fi
+        fi
+        if docker compose version > /dev/null 2>&1 || command_exists docker-compose; then
+            $compose_cmd stop redis serverless-redis-http > /dev/null 2>&1 || true
+        fi
+    fi
     
     # Kill backend if running
     if [ -n "$BACKEND_PID" ] && kill -0 $BACKEND_PID 2>/dev/null; then
@@ -778,6 +920,12 @@ if [ "$PORTS_CHANGED" = true ]; then
     print_success "Supabase config.toml updated with new ports"
 fi
 
+# Start Redis first (lightweight, fast startup)
+if ! start_redis; then
+    print_warning "Redis failed to start, but continuing with other services..."
+fi
+echo ""
+
 # Start Supabase
 print_status "Starting Supabase for project: startup-template (this may take a minute on first run)..."
 print_status "Logs will be displayed in the console..."
@@ -949,6 +1097,8 @@ echo -e "  ${BLUE}Frontend:${NC}        http://localhost:$FRONTEND_PORT"
 echo -e "  ${BLUE}Backend API:${NC}      http://localhost:$BACKEND_PORT"
 echo -e "  ${BLUE}API Docs:${NC}         http://localhost:$BACKEND_PORT/docs"
 echo -e "  ${BLUE}Health Check:${NC}     http://localhost:$BACKEND_PORT/health"
+echo -e "  ${BLUE}Redis:${NC}            redis://localhost:$REDIS_PORT"
+echo -e "  ${BLUE}SRH (Redis HTTP):${NC}  http://localhost:$SRH_PORT"
 echo -e "  ${BLUE}Supabase Studio:${NC}  http://127.0.0.1:$SUPABASE_STUDIO_PORT"
 echo -e "  ${BLUE}Supabase API:${NC}      http://127.0.0.1:$SUPABASE_API_PORT"
 echo -e "  ${BLUE}Email Testing:${NC}     http://127.0.0.1:$SUPABASE_EMAIL_PORT"
