@@ -135,9 +135,9 @@ const techStack = [
         url: "https://github.com/pgvector/pgvector",
       },
       {
-        name: "Redis",
+        name: "Upstash Redis",
         color: "text-red-600",
-        url: "https://redis.io/",
+        url: "https://upstash.com/",
       },
       { name: "Docker", color: "text-blue-600", url: "https://docker.com/" },
     ],
@@ -171,17 +171,6 @@ const services = [
     color: "bg-purple-500",
   },
   {
-    name: "Redis",
-    url: "redis://localhost:6379",
-    color: "bg-red-500",
-    isExternal: false,
-  },
-  {
-    name: "SRH (Redis HTTP)",
-    url: "http://localhost:8079",
-    color: "bg-orange-500",
-  },
-  {
     name: "Supabase Studio",
     url: "http://127.0.0.1:58423",
     color: "bg-emerald-500",
@@ -200,13 +189,6 @@ const features = [
       "Automatically detects and handles port conflicts, finds available ports, and updates all configuration files.",
     icon: faGauge,
     color: "text-blue-600",
-  },
-  {
-    name: "Local Redis",
-    description:
-      "Redis running locally via Docker Compose for caching, session storage, and queue management.",
-    icon: faDatabase,
-    color: "text-red-600",
   },
   {
     name: "Database Migrations",
@@ -267,12 +249,7 @@ const quickStart = [
 const setupSteps = [
   {
     title: "Prerequisites",
-    items: [
-      "Python 3.11+",
-      "Node.js 20+",
-      "Docker Desktop (for Supabase & Redis)",
-      "Supabase CLI",
-    ],
+    items: ["Python 3.11+", "Node.js 20+", "Docker Desktop", "Supabase CLI"],
   },
   {
     title: "Backend Setup",
@@ -370,7 +347,7 @@ export default function HomePage() {
             </span>
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
-            Production-ready template with FastAPI, Next.js, Expo, Redis, AI/ML
+            Production-ready template with FastAPI, Next.js, Expo, AI/ML
             infrastructure, ETL pipelines, and everything you need to launch
             quickly.
           </p>
@@ -404,49 +381,33 @@ export default function HomePage() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {services.map((service, idx) => {
-                const isClickable = service.url.startsWith("http");
-                const Component = isClickable ? "a" : "div";
-                const props = isClickable
-                  ? {
-                      href: service.url,
-                      target: "_blank",
-                      rel: "noopener noreferrer",
-                    }
-                  : {};
-
-                return (
-                  <Component
-                    key={idx}
-                    {...props}
-                    className={`group p-4 border-2 border-slate-200 rounded-xl transition-all duration-200 ${
-                      isClickable
-                        ? "hover:border-slate-300 hover:shadow-md cursor-pointer"
-                        : "cursor-default"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`w-3 h-3 ${service.color} rounded-full animate-pulse`}
-                      ></div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-slate-900">
-                          {service.name}
-                        </h4>
-                        <p className="text-xs text-slate-600 font-mono truncate">
-                          {service.url}
-                        </p>
-                      </div>
-                      {isClickable && (
-                        <FontAwesomeIcon
-                          icon={faExternalLink}
-                          className="text-slate-400 group-hover:text-slate-600 transition-colors"
-                        />
-                      )}
+              {services.map((service, idx) => (
+                <a
+                  key={idx}
+                  href={service.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group p-4 border-2 border-slate-200 rounded-xl hover:border-slate-300 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-3 h-3 ${service.color} rounded-full animate-pulse`}
+                    ></div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-slate-900">
+                        {service.name}
+                      </h4>
+                      <p className="text-xs text-slate-600 font-mono truncate">
+                        {service.url}
+                      </p>
                     </div>
-                  </Component>
-                );
-              })}
+                    <FontAwesomeIcon
+                      icon={faExternalLink}
+                      className="text-slate-400 group-hover:text-slate-600 transition-colors"
+                    />
+                  </div>
+                </a>
+              ))}
             </div>
           </div>
         </section>

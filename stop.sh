@@ -237,40 +237,6 @@ stop_frontend() {
     fi
 }
 
-# Stop Redis and SRH
-stop_redis() {
-    print_status "Stopping Redis and SRH..."
-    
-    # Check if docker-compose.yml exists
-    if [ ! -f "docker-compose.yml" ]; then
-        print_warning "docker-compose.yml not found, skipping Redis/SRH stop"
-        return
-    fi
-    
-    # Try docker compose first (newer Docker versions), fallback to docker-compose
-    local compose_cmd="docker compose"
-    if ! docker compose version > /dev/null 2>&1; then
-        if command_exists docker-compose; then
-            compose_cmd="docker-compose"
-        else
-            # Fallback: try to stop containers directly
-            docker stop startup-template-redis startup-template-srh > /dev/null 2>&1 || true
-            print_warning "Docker compose not found, stopped containers directly"
-            return
-        fi
-    fi
-    
-    # Stop Redis and SRH using docker compose
-    if $compose_cmd stop redis serverless-redis-http 2>&1; then
-        print_success "Redis and SRH stopped"
-    else
-        print_warning "Failed to stop Redis/SRH via docker compose, trying direct Docker stop..."
-        # Fallback: try to stop containers directly
-        docker stop startup-template-redis startup-template-srh > /dev/null 2>&1 || true
-        print_warning "Stopped containers directly"
-    fi
-}
-
 # Main execution
 print_status "Stopping all services..."
 
@@ -279,9 +245,6 @@ read_ports_from_config
 
 # Stop Supabase first (most important)
 force_stop_supabase
-
-# Stop Redis
-stop_redis
 
 # Stop Backend
 stop_backend

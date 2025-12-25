@@ -10,7 +10,7 @@ A production-ready, full-stack startup template based on optimal tech stack for 
 - **Frontend Web**: Next.js 16 + Tailwind CSS + Headless UI
 - **Mobile**: Expo (React Native) + NativeWind
 - **State Management**: Zustand
-- **Caching**: Redis (local via Docker Compose + SRH proxy, production via Upstash Redis REST API)
+- **Caching**: Upstash Redis
 - **ETL**: PySpark pipelines
 - **AI/ML**: LangChain + LangGraph + Google GenAI
 - **Observability**: Sentry + Structured Logging
@@ -45,11 +45,10 @@ This script will:
 
 1. Check prerequisites (Docker, Python, Node.js)
 2. **Automatically handle port conflicts** - If ports are in use, it finds available ports and updates all configuration files
-3. Start Redis local instance (via Docker Compose)
-4. Start Supabase local instance
-5. **Display Supabase keys** - Shows API URL, Publishable Key, and Secret Key for easy copy-paste
-6. Start Backend API (FastAPI + Uvicorn)
-7. Start Frontend (Next.js)
+3. Start Supabase local instance
+4. **Display Supabase keys** - Shows API URL, Publishable Key, and Secret Key for easy copy-paste
+5. Start Backend API (FastAPI + Uvicorn)
+6. Start Frontend (Next.js)
 
 **Port Conflict Handling:**
 
@@ -69,10 +68,10 @@ To start the mobile app separately:
 
 - Python 3.11+
 - Node.js 20+
-- Docker (for local development - required for Supabase, Redis, and SRH)
+- Docker (for local development)
 - Supabase account
 - Railway account (for deployment)
-- Upstash Redis account (for production - optional, can use SRH locally)
+- Upstash Redis account
 
 ### Backend Setup
 
@@ -107,49 +106,6 @@ cd mobile
 npm install
 npx expo start
 ```
-
-### Redis Local Development
-
-Redis is automatically started via Docker Compose when you run `./start.sh`. The setup includes:
-
-1. **Redis** - Local Redis instance running on port `6379`
-2. **SRH (Serverless Redis HTTP)** - HTTP proxy for Redis that provides Upstash-compatible REST API on port `8079`
-
-This setup allows you to use the same Upstash Redis SDK in both local development and production, with seamless switching between environments.
-
-**How it works:**
-
-- **Local Development**: Your code uses Upstash REST API → SRH proxy → Local Redis
-- **Production**: Your code uses Upstash REST API → Upstash Cloud
-
-The backend automatically uses `REDIS_REST_URL` and `REDIS_REST_TOKEN` when available, allowing you to switch between local and production by simply changing environment variables.
-
-**To manage Redis/SRH manually:**
-
-```bash
-# Start Redis and SRH
-docker compose up -d redis serverless-redis-http
-
-# Stop Redis and SRH
-docker compose stop redis serverless-redis-http
-
-# View Redis logs
-docker compose logs -f redis
-
-# View SRH logs
-docker compose logs -f serverless-redis-http
-
-# Connect to Redis CLI
-docker exec -it startup-template-redis redis-cli
-```
-
-**Environment Variables:**
-
-- `REDIS_REST_URL` - Set to `http://localhost:8079` for local development (via SRH)
-- `REDIS_REST_TOKEN` - Set to `local_dev_token` for local development
-- In production, set these to your Upstash Redis REST URL and token
-
-For more information, see the [Upstash SRH documentation](https://upstash.com/docs/redis/sdks/ts/developing).
 
 ### Supabase Local Development
 
