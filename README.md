@@ -85,11 +85,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 # Configure your environment variables in .env file
 # Run with uvicorn (ASGI server)
-uvicorn src.main:app --reload --host 0.0.0.0 --port 18000
+uvicorn src.main:app --reload --host 0.0.0.0 --port 18005
 ```
 
-The API will be available at `http://localhost:18000`
-API documentation (Scalar) will be at `http://localhost:18000/docs`
+The API will be available at `http://localhost:18005`
+API documentation (Scalar) will be at `http://localhost:18005/docs`
 
 ### Frontend Setup
 
@@ -112,8 +112,8 @@ npx expo start
 
 Redis is automatically started via Docker Compose when you run `./start.sh`. The setup includes:
 
-1. **Redis** - Local Redis instance running on port `6379`
-2. **SRH (Serverless Redis HTTP)** - HTTP proxy for Redis that provides Upstash-compatible REST API on port `8079`
+1. **Redis** - Local Redis instance running on port `6384`
+2. **SRH (Serverless Redis HTTP)** - HTTP proxy for Redis that provides Upstash-compatible REST API on port `8084`
 
 This setup allows you to use the same Upstash Redis SDK in both local development and production, with seamless switching between environments.
 
@@ -145,7 +145,7 @@ docker exec -it startup-template-redis redis-cli
 
 **Environment Variables:**
 
-- `REDIS_REST_URL` - Set to `http://localhost:8079` for local development (via SRH)
+- `REDIS_REST_URL` - Set to `http://localhost:8084` for local development (via SRH)
 - `REDIS_REST_TOKEN` - Set to `local_dev_token` for local development
 - In production, set these to your Upstash Redis REST URL and token
 

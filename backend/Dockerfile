@@ -18,8 +18,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY src/ ./src/
 
 # Expose port
-EXPOSE 18000
+EXPOSE 18005
 
 # Run application
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "18000"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "18005"]
 

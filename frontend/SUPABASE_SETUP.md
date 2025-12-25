@@ -65,7 +65,7 @@ env: {
 npm run dev
 ```
 
-Visit http://localhost:13000 and verify no errors in the console.
+Visit http://localhost:13005 and verify no errors in the console.
 
 ### 5. Deploy to Vercel
 

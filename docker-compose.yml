@@ -5,7 +5,7 @@ services:
     image: redis:7-alpine
     container_name: startup-template-redis
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "${REDIS_PORT:-6384}:6379"
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
@@ -20,7 +20,7 @@ services:
     image: hiett/serverless-redis-http:latest
     container_name: startup-template-srh
     ports:
-      - "${SRH_PORT:-8079}:80"
+      - "${SRH_PORT:-8084}:80"
     environment:
       SRH_MODE: env
       SRH_TOKEN: "${SRH_TOKEN:-local_dev_token}"
