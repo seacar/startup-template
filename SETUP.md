@@ -41,10 +41,10 @@ supabase start
 
 This will start:
 
-- PostgreSQL database (port 58427)
-- Supabase API (port 58426)
-- Supabase Studio (port 58428)
-- Inbucket email testing (port 58429)
+- PostgreSQL database (port 58422)
+- Supabase API (port 58421)
+- Supabase Studio (port 58423)
+- Inbucket email testing (port 58424)
 
 ### Environment Configuration
 
@@ -56,11 +56,11 @@ cp .env.example .env
 
 Edit `.env` with your configuration:
 
-- `SUPABASE_URL`: Your Supabase project URL (or `http://127.0.0.1:58426` for local)
+- `SUPABASE_URL`: Your Supabase project URL (or `http://127.0.0.1:58421` for local)
 - `SUPABASE_PUBLISHABLE_KEY`: Your Supabase publishable key
 - `SUPABASE_SECRET_KEY`: Your Supabase secret key
 - `SUPABASE_DB_HOST`: Database host (or `127.0.0.1` for local)
-- `SUPABASE_DB_PORT`: Database port (58427 for local)
+- `SUPABASE_DB_PORT`: Database port (58422 for local)
 - `SUPABASE_DB_NAME`: Database name (usually "postgres")
 - `SUPABASE_DB_USER`: Database user (usually "postgres")
 - `SUPABASE_DB_PASSWORD`: Database password
@@ -78,20 +78,20 @@ The backend uses **Uvicorn** as the ASGI server for FastAPI:
 uvicorn src.main:app --reload
 
 # Or specify host and port explicitly
-uvicorn src.main:app --reload --host 0.0.0.0 --port 18005
+uvicorn src.main:app --reload --host 0.0.0.0 --port 18000
 
 # Production-like server (no reload)
-uvicorn src.main:app --host 0.0.0.0 --port 18005 --workers 4
+uvicorn src.main:app --host 0.0.0.0 --port 18000 --workers 4
 ```
 
-The API will be available at `http://localhost:18005`
-API documentation (Scalar) will be at `http://localhost:18005/docs`
+The API will be available at `http://localhost:18000`
+API documentation (Scalar) will be at `http://localhost:18000/docs`
 
 **Uvicorn Options:**
 
 - `--reload`: Enable auto-reload on code changes (development only)
 - `--host`: Bind to specific host (default: 127.0.0.1)
-- `--port`: Bind to specific port (default: 18005)
+- `--port`: Bind to specific port (default: 18000)
 - `--workers`: Number of worker processes (production)
 
 ## 2. Frontend Setup (Next.js)
@@ -113,7 +113,7 @@ Edit `.env.local` with your configuration:
 
 - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: Your Supabase publishable key
-- `NEXT_PUBLIC_API_URL`: Your backend API URL (default: http://localhost:18005)
+- `NEXT_PUBLIC_API_URL`: Your backend API URL (default: http://localhost:18000)
 
 ### Run Locally
 
@@ -121,7 +121,7 @@ Edit `.env.local` with your configuration:
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:13005`
+The frontend will be available at `http://localhost:13000`
 
 ## 3. Mobile Setup (Expo)
 
@@ -265,7 +265,7 @@ Seed data is located in `supabase/seed.sql` and runs automatically after migrati
 - Ensure Java 17+ is installed (required for Spark)
 - Check Spark configuration in `src/etl/utils/spark_session.py`
 - Verify database connection credentials
-- For local Supabase: Use `127.0.0.1:58427` as database host
+- For local Supabase: Use `127.0.0.1:58422` as database host
 
 ### Supabase Issues
 

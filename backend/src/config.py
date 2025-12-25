@@ -25,11 +25,11 @@ class Settings(BaseSettings):
 
     # Server
     HOST: str = "0.0.0.0"
-    PORT: int = 18005
+    PORT: int = 18000
 
     # CORS - use Any type to prevent automatic JSON parsing, then validate
     CORS_ORIGINS: Any = Field(
-        default=["http://localhost:13005", "http://localhost:13006"]
+        default=["http://localhost:13000", "http://localhost:13001"]
     )
 
     @field_validator("CORS_ORIGINS", mode="before")
@@ -44,7 +44,7 @@ class Settings(BaseSettings):
         if isinstance(v, str):
             # Handle empty string
             if not v.strip():
-                return ["http://localhost:13005", "http://localhost:13006"]
+                return ["http://localhost:13000", "http://localhost:13001"]
             
             # Try parsing as JSON first
             try:
@@ -61,7 +61,7 @@ class Settings(BaseSettings):
                 return origins
         
         # Default fallback
-        return ["http://localhost:13005", "http://localhost:13006"]
+        return ["http://localhost:13000", "http://localhost:13001"]
 
     # Supabase
     SUPABASE_URL: str = ""
@@ -85,17 +85,10 @@ class Settings(BaseSettings):
 
     # Google GenAI
     GOOGLE_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-3-pro"
-    GEMINI_EMBEDDING_MODEL: str = "gemini-embedding-001"
-
-    # Cookie Settings
-    COOKIE_DOMAIN: str = ""
-    COOKIE_SECURE: bool = True
-    COOKIE_SAMESITE: str = "lax"
 
     # ETL - Supabase PostgreSQL
     SUPABASE_DB_HOST: str = ""
-    SUPABASE_DB_PORT: int = 58427
+    SUPABASE_DB_PORT: int = 58422
     SUPABASE_DB_NAME: str = ""
     SUPABASE_DB_USER: str = ""
     SUPABASE_DB_PASSWORD: str = ""

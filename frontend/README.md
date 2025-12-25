@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Visit http://localhost:13005
+Visit http://localhost:13000
 
 ## 📦 What's Included
 
@@ -49,7 +49,7 @@ The landing page showcases:
 ### Development
 
 ```bash
-npm run dev          # Start dev server on port 13005
+npm run dev          # Start dev server on port 13000
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
