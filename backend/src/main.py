@@ -14,6 +14,7 @@ from src.config import settings
 from src.middleware.rate_limit import limiter
 from src.routers import health
 from src.utils.langsmith import init_langsmith
+from src.utils.posthog import get_posthog
 
 
 @asynccontextmanager
@@ -28,6 +29,10 @@ def create_app() -> FastAPI:
     """Create and configure FastAPI application."""
     # Initialize LangSmith for AI observability
     init_langsmith()
+
+    # Initialize PostHog for product analytics (server-side)
+    if settings.POSTHOG_API_KEY and settings.POSTHOG_API_KEY.strip():
+        get_posthog()
 
     app = FastAPI(
         title=settings.APP_NAME,

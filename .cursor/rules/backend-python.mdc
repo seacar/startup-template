@@ -1,0 +1,13 @@
+---
+description: Python and FastAPI conventions for the backend
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# Backend (Python / FastAPI)
+
+- Use type hints and Pydantic for request/response models. Prefer `src/` package layout; routers in `src/routers/`, config in `src/config.py`.
+- Async where I/O-bound: use `async def` for route handlers and `await` for Supabase/HTTP/Redis. Use `structlog` for structured logging.
+- Tests: `backend/tests/` with pytest. Prefer `tests/test_<module>.py` and clear test names. Use fixtures for shared setup (DB, client).
+- Env: Load from `.env` via `pydantic-settings`; never commit secrets. See `backend/.env.example` for required variables.
+- API surface: Rate limiting via `slowapi`, CORS from config, Scalar for docs at `/docs`. Health check at `/health`.

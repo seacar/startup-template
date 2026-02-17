@@ -7,11 +7,11 @@ from src.config import settings
 
 
 def get_vector_store(table_name: str = "documents") -> SupabaseVectorStore:
-    """Get Supabase vector store instance."""
+    """Get Supabase vector store with Google GenAI embeddings (google-genai SDK)."""
     supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SECRET_KEY)
     embeddings = GoogleGenerativeAIEmbeddings(
         model="models/embedding-001",
-        google_api_key=settings.GOOGLE_API_KEY,
+        api_key=settings.GOOGLE_API_KEY or None,
     )
 
     return SupabaseVectorStore(
@@ -20,4 +20,3 @@ def get_vector_store(table_name: str = "documents") -> SupabaseVectorStore:
         table_name=table_name,
         query_name="match_documents",
     )
-

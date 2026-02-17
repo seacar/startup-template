@@ -64,3 +64,6 @@ derby.log
 supabase/.branches/
 supabase/.temp/
 
+# Cursor: rules, commands, skills, hooks are in git; scratchpad is local
+.cursor/scratchpad.md
+

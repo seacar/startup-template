@@ -1,0 +1,29 @@
+---
+description: Core project standards, commands, and workflow for the full-stack template
+alwaysApply: true
+---
+
+# Commands
+
+- **Backend:** `cd backend && python -m pytest tests/` (prefer single test files for speed), `uvicorn src.main:app --reload`
+- **Frontend:** `npm run dev`, `npm run build`, `npm run type-check`, `npm run lint`
+- **Mobile:** `npx expo start` (from `mobile/`)
+
+# Stack
+
+- Backend: Python 3.10+, FastAPI, Supabase, Redis/Upstash, LangChain/LangGraph, Google GenAI
+- Frontend: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, Headless UI, Zustand, Supabase
+- Mobile: Expo (React Native), shared Tailwind via NativeWind, Zustand, Supabase
+- Docs: All non-README/SETUP documentation goes in `documentation/` as markdown
+
+# Workflow
+
+- Follow existing code patterns and structure in each directory. Use TypeScript for frontend/mobile, Python for backend.
+- After a series of code changes: run type-check (frontend) and/or tests (backend) before considering the task done.
+- API routes: backend in `backend/src/routers/`, frontend API routes in `frontend/app/api/`.
+- When adding features: prefer planning first (Plan Mode or `.cursor/plans/`), then build, then test, then update docs in `documentation/`.
+
+# Build specs and agent-driven work
+
+- Authoritative “what to build” lives in `documentation/` (e.g. `documentation/build-specs/`). Use the **Build from spec** skill when the user wants to implement a documented feature: read the spec → plan → build → test → update docs.
+- For long-running agent loops (e.g. “iterate until tests pass”), use `.cursor/scratchpad.md` to track progress and signal completion (e.g. write `DONE` when the goal is met).

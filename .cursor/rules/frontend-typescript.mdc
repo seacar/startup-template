@@ -1,0 +1,13 @@
+---
+description: Next.js and TypeScript conventions for the frontend
+globs: frontend/**/*.ts,frontend/**/*.tsx
+alwaysApply: false
+---
+
+# Frontend (Next.js / TypeScript)
+
+- Use ES modules (import/export). Destructure imports when readable: `import { foo } from 'bar'`.
+- App Router: pages under `app/`, layouts in `layout.tsx`, API routes in `app/api/`. Use Server Components by default; add `"use client"` only when needed.
+- UI: Tailwind for styling. Use Headless UI primitives from `@/components/ui/headless` or `@/components/ui/` for consistent patterns. See existing `app/page.tsx` and `components/ui/` for structure.
+- State: Zustand for client state. Colocate component logic and keep components focused.
+- Run `npm run type-check` after making multiple changes.

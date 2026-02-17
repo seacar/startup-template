@@ -1,6 +1,6 @@
 "use client";
 
-import { Tab, Disclosure } from "@headlessui/react";
+import { Tab, Disclosure } from "@/components/ui/headless";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRocket,
@@ -505,7 +505,7 @@ export default function HomePage() {
             <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
               <Tab.List className="flex border-b border-slate-200 bg-slate-50">
                 <Tab
-                  className={({ selected }) =>
+                  className={({ selected }: { selected: boolean }) =>
                     `flex-1 px-6 py-4 text-sm font-semibold transition-colors ${
                       selected
                         ? "text-blue-600 bg-white border-b-2 border-blue-600"
@@ -516,7 +516,7 @@ export default function HomePage() {
                   Quick Start
                 </Tab>
                 <Tab
-                  className={({ selected }) =>
+                  className={({ selected }: { selected: boolean }) =>
                     `flex-1 px-6 py-4 text-sm font-semibold transition-colors ${
                       selected
                         ? "text-blue-600 bg-white border-b-2 border-blue-600"
@@ -565,7 +565,7 @@ export default function HomePage() {
                   <div className="space-y-6">
                     {setupSteps.map((section, idx) => (
                       <Disclosure key={idx}>
-                        {({ open }) => (
+                        {({ open }: { open: boolean }) => (
                           <div className="border border-slate-200 rounded-xl overflow-hidden">
                             <Disclosure.Button className="w-full px-6 py-4 bg-slate-50 hover:bg-slate-100 transition-colors flex items-center justify-between">
                               <div className="flex items-center gap-3">
