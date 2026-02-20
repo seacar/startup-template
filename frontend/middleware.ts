@@ -8,10 +8,10 @@ export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const accept = request.headers.get("accept") ?? "";
 
-  // For homepage, rewrite to markdown API endpoint if markdown is requested
+  // For homepage, rewrite to static markdown file so agents get plain content
   if (pathname === "/" && (accept.includes("text/markdown") || accept.includes("text/plain"))) {
     const url = request.nextUrl.clone();
-    url.pathname = "/api/homepage-markdown";
+    url.pathname = "/homepage.md";
     return NextResponse.rewrite(url);
   }
 

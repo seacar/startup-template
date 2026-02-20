@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run generate:markdown && next build",
+    "generate:markdown": "tsx scripts/generate-homepage-markdown.ts",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit"
@@ -31,6 +32,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "tsx": "^4.19.2",
     "@types/node": "^25.2.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
