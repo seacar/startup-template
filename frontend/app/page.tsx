@@ -147,7 +147,6 @@ const techStack = [
     icon: faChartLine,
     gradient: "from-red-500 to-pink-500",
     technologies: [
-      { name: "Sentry", color: "text-purple-700", url: "https://sentry.io/" },
       {
         name: "LangSmith",
         color: "text-blue-600",
@@ -255,8 +254,8 @@ const setupSteps = [
     title: "Backend Setup",
     items: [
       "cd backend",
-      "python -m venv venv",
-      "source venv/bin/activate",
+      "python -m venv .venv",
+      "source .venv/bin/activate",
       "pip install -r requirements.txt",
       "cp .env.example .env",
     ],

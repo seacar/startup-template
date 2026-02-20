@@ -13,7 +13,7 @@ A production-ready, full-stack startup template based on optimal tech stack for 
 - **Caching**: Upstash Redis
 - **ETL**: PySpark pipelines
 - **AI/ML**: LangChain + LangGraph + Google GenAI
-- **Observability**: Sentry + Structured Logging
+- **Observability**: Structured Logging + PostHog
 
 ## Project Structure
 
@@ -43,12 +43,13 @@ Start all services with a single command:
 
 This script will:
 
-1. Check prerequisites (Docker, Python, Node.js)
-2. **Automatically handle port conflicts** - If ports are in use, it finds available ports and updates all configuration files
-3. Start Supabase local instance
-4. **Display Supabase keys** - Shows API URL, Publishable Key, and Secret Key for easy copy-paste
-5. Start Backend API (FastAPI + Uvicorn)
-6. Start Frontend (Next.js)
+1. **First time only:** Prompt for project name, optional custom ports, then remove the template’s git history and run `git init` for your new project.
+2. Check prerequisites (Docker, Python, Node.js)
+3. **Automatically handle port conflicts** - If ports are in use, it finds available ports and updates all configuration files
+4. Start Supabase local instance
+5. **Display Supabase keys** - Shows API URL, Publishable Key, and Secret Key for easy copy-paste
+6. Start Backend API (FastAPI + Uvicorn)
+7. Start Frontend (Next.js)
 
 **Port Conflict Handling:**
 
@@ -79,8 +80,8 @@ The backend uses **Uvicorn** as the ASGI server for FastAPI:
 
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 # Configure your environment variables in .env file
 # Run with uvicorn (ASGI server)

@@ -39,6 +39,13 @@ FRONTEND_PORT=$DEFAULT_FRONTEND_PORT
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
 
+# Project name (from first-time setup; default if not set)
+PROJECT_NAME="startup-template"
+if [ -f ".startup-config" ]; then
+    # shellcheck source=/dev/null
+    source ".startup-config"
+fi
+
 # Function to print colored output
 print_status() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -129,9 +136,9 @@ kill_process_on_port() {
 }
 
 # Function to forcefully stop Supabase and clean up Docker containers
-# Only stops containers for this specific project (startup-template)
+# Only stops containers for this specific project
 force_stop_supabase() {
-    print_status "Stopping Supabase for this project (startup-template)..."
+    print_status "Stopping Supabase for this project ($PROJECT_NAME)..."
     
     # Use Supabase CLI to stop - this is the safest way and respects project boundaries
     if command_exists supabase; then
@@ -139,7 +146,7 @@ force_stop_supabase() {
         cd "$SCRIPT_DIR" || exit 1
         
         # Stop using project-id to ensure we only stop this project
-        if supabase stop --project-id startup-template 2>&1; then
+        if supabase stop --project-id "$PROJECT_NAME" 2>&1; then
             print_success "Supabase stopped via CLI"
         else
             # Fallback: try stopping from current directory (CLI detects project automatically)
@@ -166,7 +173,7 @@ force_stop_supabase() {
     
     # Only stop containers specific to this project
     # Supabase containers follow pattern: supabase_[service]_[project_id]
-    local project_id="startup-template"
+    local project_id="$PROJECT_NAME"
     local project_containers=$(docker ps -a --filter "name=${project_id}" --format "{{.ID}} {{.Names}}" 2>/dev/null || true)
     
     if [ -n "$project_containers" ]; then
@@ -175,7 +182,7 @@ force_stop_supabase() {
         local container_ids=$(echo "$project_containers" | awk '{print $1}')
         for container_id in $container_ids; do
             local container_name=$(echo "$project_containers" | grep "^$container_id" | awk '{print $2}')
-            # Only stop if it's actually a startup-template container
+            # Only stop if it's actually this project's container
             if echo "$container_name" | grep -q "${project_id}"; then
                 print_status "Stopping container: $container_name"
                 docker stop "$container_id" > /dev/null 2>&1 || true
@@ -212,7 +219,7 @@ force_stop_supabase() {
     
     # Final wait to ensure everything is cleaned up
     sleep 1
-    print_success "Supabase cleanup completed for project: startup-template"
+    print_success "Supabase cleanup completed for project: $PROJECT_NAME"
 }
 
 # Stop Backend
