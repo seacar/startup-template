@@ -6,9 +6,9 @@ A production-ready, full-stack startup template based on optimal tech stack for 
 
 ## Stack Overview
 
-- **Backend**: FastAPI + Uvicorn + Supabase + Railway
-- **Frontend Web**: Next.js 16 + Tailwind CSS + Headless UI
-- **Mobile**: Expo (React Native) + NativeWind
+- **Backend**: FastAPI + Uvicorn + Supabase + Railway (Python 3.10+)
+- **Frontend Web**: Next.js 16 (App Router) + React 19 + TypeScript + Tailwind CSS 4 + Headless UI + Supabase
+- **Mobile**: Expo (React Native) + NativeWind + Zustand + Supabase
 - **State Management**: Zustand
 - **Caching**: Upstash Redis
 - **ETL**: PySpark pipelines
@@ -23,12 +23,13 @@ startup-template/
 │   └── src/
 │       ├── ai/       # AI/ML infrastructure (LangChain, LangGraph)
 │       ├── etl/       # PySpark ETL pipelines
-│       └── ...        # FastAPI application code
-├── frontend/         # Next.js web application
+│       └── routers/  # API routes
+├── frontend/         # Next.js web application (App Router, app/api/)
 ├── mobile/           # Expo React Native application
-└── supabase/         # Supabase local development config
-    ├── migrations/   # Database migrations (timestamped SQL files)
-    └── seed.sql      # Seed data (runs after migrations)
+├── supabase/         # Supabase local development config
+│   ├── migrations/   # Database migrations (timestamped SQL files)
+│   └── seed.sql      # Seed data (runs after migrations)
+└── documentation/    # In-repo docs (build-specs, guides)
 ```
 
 ## Getting Started
@@ -67,12 +68,14 @@ To start the mobile app separately:
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.10+
 - Node.js 20+
 - Docker (for local development)
 - Supabase account
 - Railway account (for deployment)
 - Upstash Redis account
+
+For step-by-step setup (env vars, Supabase, etc.), see [SETUP.md](SETUP.md).
 
 ### Backend Setup
 
@@ -88,8 +91,7 @@ pip install -r requirements.txt
 uvicorn src.main:app --reload --host 0.0.0.0 --port 18000
 ```
 
-The API will be available at `http://localhost:18000`
-API documentation (Scalar) will be at `http://localhost:18000/docs`
+The API will be available at `http://localhost:18000`. API docs (Scalar) at `http://localhost:18000/docs`.
 
 ### Frontend Setup
 
@@ -99,6 +101,8 @@ npm install
 cp .env.example .env.local  # Configure your environment variables
 npm run dev
 ```
+
+With default ports (e.g. when using `./start.sh`), the frontend runs at `http://localhost:13000`.
 
 ### Mobile Setup
 
@@ -174,16 +178,24 @@ To apply migrations:
 supabase db reset  # Resets and runs all migrations + seeds
 ```
 
+## Testing & Development
+
+- **Backend:** `cd backend && python -m pytest tests/` (use a single test file for speed, e.g. `tests/test_health.py`)
+- **Frontend:** `npm run type-check` and `npm run lint` (from `frontend/`)
+- **Mobile:** `npx expo start` from `mobile/`
+
+Run type-check and tests after making changes before considering work done.
+
 ## Documentation
 
-For detailed documentation on each component, refer to:
+**In this repo:**
 
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Uvicorn Documentation](https://www.uvicorn.org/)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Expo Documentation](https://docs.expo.dev/)
-- [Supabase Documentation](https://supabase.com/docs)
-- [LangChain Documentation](https://python.langchain.com/)
+- [SETUP.md](SETUP.md) — Detailed setup (env vars, Supabase, Uvicorn options)
+- [documentation/](documentation/) — Build specs (`documentation/build-specs/`), agent setup, and other guides
+
+**External:**
+
+- [FastAPI](https://fastapi.tiangolo.com/) · [Uvicorn](https://www.uvicorn.org/) · [Next.js](https://nextjs.org/docs) · [Expo](https://docs.expo.dev/) · [Supabase](https://supabase.com/docs) · [LangChain](https://python.langchain.com/)
 
 ## License
 
