@@ -548,33 +548,12 @@ export function middleware(request: NextRequest) {
 - Edge function performance metrics  
 - Build and deployment analytics
 
-**Sentry (Error Tracking):**
+**PostHog (Product Analytics & Observability):**
 
-- Automatic error capturing for frontend and backend  
-- Source map support for production debugging  
-- Performance monitoring and profiling  
-- Release tracking and regression detection  
-- User impact analysis
-
-**Integration Example:**
-
-\# FastAPI \+ Sentry
-
-import sentry\_sdk
-
-from sentry\_sdk.integrations.fastapi import FastApiIntegration
-
-sentry\_sdk.init(
-
-    dsn="your-sentry-dsn",
-
-    integrations=\[FastApiIntegration()\],
-
-    traces\_sample\_rate=0.1,  \# 10% of requests
-
-    profiles\_sample\_rate=0.1,
-
-)
+- Product analytics, feature flags, session replay, and surveys  
+- Backend event capture via PostHog Python SDK  
+- Frontend pageviews and custom events via posthog-js  
+- No separate error-tracking service; use structured logging and PostHog for product context
 
 ### Logging Strategy
 
@@ -609,7 +588,7 @@ logger.info("user\_action", user\_id=user.id, action="purchase", value=99.99)
 
 - Vercel Web Vitals for Core Web Vitals tracking  
 - Lighthouse CI in deployment pipeline  
-- Real User Monitoring via Sentry  
+- PostHog for product analytics and session replay  
 - Custom performance marks and measures
 
 **Backend Performance:**
@@ -754,8 +733,7 @@ For comprehensive documentation on AI/ML infrastructure, including:
 
 **Observability & Analytics:**
 
-- **Umami:** $0/month (self-hosted on Railway or free cloud tier)  
-- **Sentry:** $0/month (generous free tier → $26/month for team features)  
+- **PostHog:** $0/month (generous free tier → paid for scale)  
 - **Vercel Analytics:** $0/month (included in free tier)
 
 **Total MVP (solo founder):** \~$25-50/month (mainly Railway \+ Cursor)
@@ -799,8 +777,8 @@ For comprehensive documentation on AI/ML infrastructure, including:
 
 **Observability:**
 
-- Sentry scales to millions of events per month  
-- Add Datadog or New Relic for advanced APM at $5M ARR  
+- PostHog scales for product analytics and session replay  
+- Add Datadog or New Relic for advanced APM at $5M ARR if needed  
 - Custom metrics and dashboards as team grows  
 - On-call rotation and incident management at 24/7 operations
 
@@ -890,8 +868,7 @@ The combination of FastAPI's flexibility, Railway's unified deployment, Supabase
 - **Cursor IDE** accelerates development with AI pair programming, reducing time-to-market by 40-60%  
 - **Linear** provides lightweight agile management with 2-week sprints and Thursday deployments  
 - **Railway** simplifies deployment complexity for APIs, ETL jobs, and analytics infrastructure  
-- **Umami** delivers privacy-first analytics without cookie consent overhead  
-- **Sentry** provides comprehensive error tracking and performance monitoring
+- **PostHog** delivers product analytics, session replay, feature flags, and observability in one platform
 
 **Production-Ready Security & Observability:**
 
@@ -957,8 +934,7 @@ Most importantly, this stack allows technical leaders to focus on building diffe
 
 ### Observability & Analytics
 
-- [Umami Documentation](https://umami.is/docs)  
-- [Sentry Documentation](https://docs.sentry.io/)  
+- [PostHog Documentation](https://posthog.com/docs)  
 - [Vercel Analytics Documentation](https://vercel.com/docs/analytics)
 
 ### Security & Compliance

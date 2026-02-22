@@ -13,7 +13,7 @@ A production-ready, full-stack startup template based on optimal tech stack for 
 - **Caching**: Upstash Redis
 - **ETL**: PySpark pipelines
 - **AI/ML**: LangChain + LangGraph + Google GenAI
-- **Observability**: Structured Logging + PostHog
+- **Observability**: Structured Logging + PostHog; optional Umami for privacy-first analytics
 
 ## Project Structure
 
