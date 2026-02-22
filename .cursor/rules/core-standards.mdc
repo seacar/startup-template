@@ -1,5 +1,5 @@
 ---
-description: Core project standards, commands, and workflow for the full-stack template
+description: Core project standards, commands, and workflow
 alwaysApply: true
 ---
 
@@ -19,11 +19,11 @@ alwaysApply: true
 # Workflow
 
 - Follow existing code patterns and structure in each directory. Use TypeScript for frontend/mobile, Python for backend.
-- After a series of code changes: run type-check (frontend) and/or tests (backend) before considering the task done.
+- After changes: run type-check (frontend) and tests (backend) before marking done.
 - API routes: backend in `backend/src/routers/`, frontend API routes in `frontend/app/api/`.
 - When adding features: prefer planning first (Plan Mode or `.cursor/plans/`), then build, then test, then update docs in `documentation/`.
 
 # Build specs and agent-driven work
 
-- Authoritative “what to build” lives in `documentation/` (e.g. `documentation/build-specs/`). Use the **Build from spec** skill when the user wants to implement a documented feature: read the spec → plan → build → test → update docs.
-- For long-running agent loops (e.g. “iterate until tests pass”), use `.cursor/scratchpad.md` to track progress and signal completion (e.g. write `DONE` when the goal is met).
+- "What to build" lives in `documentation/build-specs/`. Use build-from-spec skill to implement.
+- For loops: use `.cursor/scratchpad.md` to track progress. Write DONE when goal is met.

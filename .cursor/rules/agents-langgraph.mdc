@@ -1,0 +1,17 @@
+---
+description: LangGraph agent and graph conventions
+globs: agents/**/*.py,backend/src/agents/**/*.py
+alwaysApply: false
+---
+
+# LangGraph Conventions
+
+- Always define a typed State TypedDict before building any graph.
+- Use `StateGraph(State)` — never the untyped `Graph`.
+- Node functions are pure: `def node(state: State) -> dict` returning only updated keys.
+- Use `Annotated[list, operator.add]` for append-only fields (messages, reasoning_steps).
+- Prefer `Command(goto=..., update=...)` over bare conditional edges for HITL flows.
+- Interrupt with `interrupt("reason")` at approval gates — never block with sleep.
+- Checkpointer: `MemorySaver` for dev, `AsyncPostgresSaver` (Supabase) for production.
+- Structure: `agents/<name>/state.py`, `nodes.py`, `graph.py`, `tools.py`.
+- Always add a `max_iterations` guard in recursive loops.

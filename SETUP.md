@@ -6,7 +6,7 @@ This guide will help you set up each service in the startup template.
 
 Before starting, ensure you have:
 
-1. **Python 3.11+** installed
+1. **Python 3.14+** installed
 2. **Node.js 20+** installed
 3. **Docker** installed (for local development)
 4. Accounts for:
