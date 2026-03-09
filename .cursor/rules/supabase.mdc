@@ -1,0 +1,27 @@
+---
+description: Supabase client usage and RLS conventions
+globs: frontend/**/*.ts,frontend/**/*.tsx,backend/**/*.py
+alwaysApply: false
+---
+
+# Supabase Conventions
+
+## Frontend
+
+- Server client from `@/lib/supabase/server`, browser client from `@/lib/supabase/client`.
+- Never use browser client in Server Components.
+- Use `supabase.auth.getUser()` server-side — never trust `getSession()` alone.
+- All DB mutations go through RLS — never bypass with service role key on client.
+
+## Backend
+
+- Use `supabase-py` async client for all DB operations.
+- Service role key only in backend — never expose to frontend.
+- Always handle `APIError`. Map `response.data` to Pydantic models.
+
+## General
+
+- RLS enabled on every table — no exceptions.
+- Name policies clearly: "Users can read their own rows" not "policy_1".
+- Regenerate types after any migration:
+  `supabase gen types typescript --local > frontend/types/supabase.ts`

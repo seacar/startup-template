@@ -1,0 +1,15 @@
+---
+description: LLM prompt and system message conventions
+globs: **/prompts/**,**/templates/**,**/*prompt*.py
+alwaysApply: false
+---
+
+# LLM Prompt Conventions
+
+- Store templates as `.txt` or `.jinja2` in `backend/src/prompts/`.
+- Use `ChatPromptTemplate.from_messages()` for structured prompts.
+- Always include a system message defining role, constraints, and output format.
+- Use XML tags to delimit sections: `<context>`, `<instructions>`, `<examples>`.
+- For structured output: `.with_structured_output(PydanticModel)` — no manual JSON parsing.
+- Temperature: 0 for extraction/classification, 0.3–0.7 for generation.
+- Log token usage in structured logs for cost tracking.

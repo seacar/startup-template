@@ -1,10 +1,8 @@
 """FastAPI application entry point."""
 from contextlib import asynccontextmanager
 
-import sentry_sdk
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sentry_sdk.integrations.fastapi import FastApiIntegration
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -42,22 +40,6 @@ def create_app() -> FastAPI:
         docs_url=None,
         redoc_url=None,
     )
-
-    # Sentry integration
-    # Only initialize if we have a real DSN (not empty or placeholder)
-    if (
-        settings.SENTRY_DSN 
-        and settings.SENTRY_DSN.strip() 
-        and not settings.SENTRY_DSN.startswith("your_")
-        and settings.SENTRY_DSN.startswith("https://")
-    ):
-        sentry_sdk.init(
-            dsn=settings.SENTRY_DSN,
-            integrations=[FastApiIntegration()],
-            traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
-            profiles_sample_rate=settings.SENTRY_PROFILES_SAMPLE_RATE,
-            environment=settings.ENVIRONMENT,
-        )
 
     # Rate limiting
     app.state.limiter = limiter

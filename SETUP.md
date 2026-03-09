@@ -6,7 +6,7 @@ This guide will help you set up each service in the startup template.
 
 Before starting, ensure you have:
 
-1. **Python 3.11+** installed
+1. **Python 3.14+** installed
 2. **Node.js 20+** installed
 3. **Docker** installed (for local development)
 4. Accounts for:
@@ -15,7 +15,6 @@ Before starting, ensure you have:
    - Upstash Redis (https://upstash.com)
    - Google Cloud (for GenAI API key)
    - LangSmith (optional, for AI observability)
-   - Sentry (optional, for error tracking)
 
 ## 1. Backend Setup (FastAPI + Uvicorn + AI/ML + ETL)
 
@@ -25,8 +24,8 @@ The backend includes FastAPI (served with Uvicorn ASGI server), AI/ML infrastruc
 
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
@@ -65,7 +64,6 @@ Edit `.env` with your configuration:
 - `SUPABASE_DB_USER`: Database user (usually "postgres")
 - `SUPABASE_DB_PASSWORD`: Database password
 - `REDIS_URL`: Your Upstash Redis URL
-- `SENTRY_DSN`: Your Sentry DSN (optional)
 - `LANGCHAIN_API_KEY`: Your LangSmith API key (optional)
 - `GOOGLE_API_KEY`: Your Google GenAI API key
 

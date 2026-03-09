@@ -26,7 +26,7 @@ process.stdin.on("end", () => {
     }
     const n = (data.loop_count || 0) + 1;
     const out = {
-      followup_message: `[Iteration ${n}/${MAX_ITERATIONS}] Continue working toward the goal. Update .cursor/scratchpad.md with progress. Write DONE on its own line when the goal is met (e.g. all tests pass).`,
+      followup_message: `[Iteration ${n}/${MAX_ITERATIONS}] Continue toward the goal. Update .cursor/scratchpad.md with progress. Write DONE on its own line when complete.`
     };
     console.log(JSON.stringify(out));
   } catch (e) {

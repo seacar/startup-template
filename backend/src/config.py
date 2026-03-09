@@ -73,11 +73,6 @@ class Settings(BaseSettings):
     REDIS_REST_URL: str = ""
     REDIS_REST_TOKEN: str = ""
 
-    # Sentry
-    SENTRY_DSN: str = ""
-    SENTRY_TRACES_SAMPLE_RATE: float = 0.1
-    SENTRY_PROFILES_SAMPLE_RATE: float = 0.1
-
     # PostHog (product analytics & observability)
     POSTHOG_API_KEY: str = ""
     POSTHOG_HOST: str = "https://us.i.posthog.com"

@@ -1,187 +1,106 @@
-# Supabase Setup Guide
+# Enabling Supabase Authentication
 
-> **Note:** Supabase authentication is currently **disabled** in this template to allow easy deployment of the landing page without requiring Supabase configuration.
+Supabase auth is **disabled by default** so you can deploy the landing page immediately without configuration. Follow these steps when you want to add authentication.
 
-## Why is Supabase Disabled?
+## 1. Enable the Supabase client
 
-The landing page is a static marketing page that doesn't require authentication or database access. By disabling Supabase middleware, you can:
-
-- ✅ Deploy to Vercel immediately without setting up Supabase
-- ✅ Avoid middleware errors when environment variables aren't set
-- ✅ Keep the landing page fast and fully static
-
-## When to Enable Supabase
-
-Enable Supabase when you're ready to add:
-
-- User authentication (sign up, login, logout)
-- Protected routes and pages
-- Database operations
-- Real-time features
-- Row Level Security (RLS)
-
-## How to Enable Supabase
-
-### 1. Rename Disabled Files
+Rename the disabled client folder so the app can use it:
 
 ```bash
-cd frontend
-
-# Re-enable middleware
-mv middleware.ts.disabled middleware.ts
-
-# Re-enable Supabase library
+# From frontend/
 mv lib/supabase.disabled lib/supabase
 ```
 
-### 2. Set Environment Variables
+This gives you:
 
-Create `.env.local` (or set in Vercel dashboard):
+- `lib/supabase/server.ts` — server-side client (Server Components, Route Handlers)
+- `lib/supabase/client.ts` — browser client (Client Components)
+- `lib/supabase/middleware.ts` — `updateSession()` for refreshing auth in middleware
 
-```bash
-# Required Supabase environment variables
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-anon-public-key
-```
+## 2. Set environment variables
 
-Get these values from:
-
-- [Supabase Dashboard](https://app.supabase.com) → Your Project → Settings → API
-
-### 3. Update next.config.js (Optional)
-
-If you removed the env section, add it back:
-
-```javascript
-env: {
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-}
-```
-
-### 4. Test Locally
+Copy the example env and set your Supabase keys:
 
 ```bash
-npm run dev
+cp env.example .env.local
 ```
 
-Visit http://localhost:13000 and verify no errors in the console.
+Edit `.env.local` and set (uncomment if needed):
 
-### 5. Deploy to Vercel
-
-1. Push changes to GitHub
-2. In Vercel Dashboard → Settings → Environment Variables
-3. Add the same environment variables
-4. Redeploy
-
-## What Does the Middleware Do?
-
-The middleware (`middleware.ts`) runs on every request and:
-
-- ✅ Refreshes Supabase auth sessions automatically
-- ✅ Updates authentication cookies
-- ✅ Ensures users stay logged in
-- ✅ Protects routes (when you add auth logic)
-
-## Supabase Files Included
-
-Once re-enabled, you'll have access to:
-
-### `lib/supabase/client.ts`
-
-Browser-side Supabase client for client components
-
-```typescript
-import { createClient } from "@/lib/supabase/client";
-const supabase = createClient();
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
 ```
 
-### `lib/supabase/server.ts`
+Use your project URL and **anon (publishable)** key from the Supabase dashboard (Project Settings → API). Never put the service role key in the frontend.
 
-Server-side Supabase client for server components and API routes
+## 3. Enable auth in middleware
 
-```typescript
-import { createClient } from "@/lib/supabase/server";
-const supabase = await createClient();
+You have two options.
+
+### Option A: Auth only (replace middleware)
+
+If you don’t need the homepage markdown/plain content negotiation, replace the current middleware with the auth version:
+
+```bash
+mv middleware.ts middleware.content-negotiation.ts   # optional backup
+cp middleware.ts.disabled middleware.ts
 ```
 
-### `lib/supabase/middleware.ts`
+`middleware.ts.disabled` imports `updateSession` from `./lib/supabase/middleware`, so it will work once `lib/supabase` exists.
 
-Session management for the middleware
+### Option B: Auth + content negotiation (recommended)
 
-```typescript
+To keep both auth and the existing behavior (e.g. serving the homepage as markdown for `Accept: text/markdown`), update `middleware.ts` to run the Supabase session refresh and then your existing logic. For example:
+
+```ts
+// middleware.ts
+import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-```
 
-## Example: Adding Authentication
-
-### 1. Create a Login Page
-
-```typescript
-// app/login/page.tsx
-"use client";
-import { createClient } from "@/lib/supabase/client";
-
-export default function LoginPage() {
-  const supabase = createClient();
-
-  const handleLogin = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-  };
-
-  return <div>{/* Your login form */}</div>;
-}
-```
-
-### 2. Protect Routes (Optional)
-
-Add to `middleware.ts` after re-enabling:
-
-```typescript
 export async function middleware(request: NextRequest) {
-  const response = await updateSession(request);
+  const pathname = request.nextUrl.pathname;
+  const accept = request.headers.get("accept") ?? "";
 
-  // Protect specific routes
-  const { pathname } = request.nextUrl;
-  if (pathname.startsWith("/dashboard")) {
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
+  // Content negotiation for homepage
+  if (pathname === "/" && (accept.includes("text/markdown") || accept.includes("text/plain"))) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/homepage.md";
+    return NextResponse.rewrite(url);
   }
 
-  return response;
+  // Refresh Supabase session for all other matching routes
+  return await updateSession(request);
 }
+
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};
 ```
 
-## Documentation
+Use the same `config.matcher` as in `middleware.ts.disabled` so auth runs on all relevant routes.
 
-- [Supabase Auth Docs](https://supabase.com/docs/guides/auth)
-- [Next.js + Supabase Guide](https://supabase.com/docs/guides/auth/server-side/nextjs)
-- [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security)
+## 4. Use the client in your app
 
-## Troubleshooting
+- **Server Components / Route Handlers:** `import { createClient } from "@/lib/supabase/server";` then `const supabase = await createClient();`
+- **Client Components:** `import { createClient } from "@/lib/supabase/client";` then `const supabase = createClient();`
 
-### "createClient is not a function"
+Server-side, use `supabase.auth.getUser()` for the current user; don’t rely on `getSession()` alone. See `.cursor/rules/supabase.mdc` for conventions (RLS, no service role on client, etc.).
 
-- Make sure you've re-enabled the `lib/supabase` folder
-- Restart your dev server: `npm run dev`
+## 5. Regenerate types after schema changes
 
-### Middleware errors on Vercel
+After changing Supabase migrations:
 
-- Verify environment variables are set in Vercel dashboard
-- Check they start with `NEXT_PUBLIC_` prefix
-- Redeploy after adding variables
+```bash
+# From project root
+supabase gen types typescript --local > frontend/types/supabase.ts
+```
 
-### Session not persisting
+## Summary checklist
 
-- Check browser cookies are enabled
-- Verify middleware is running (check Network tab for Set-Cookie headers)
-- Ensure `middleware.ts` matcher includes your routes
+- [ ] `lib/supabase.disabled` renamed to `lib/supabase`
+- [ ] `.env.local` has `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+- [ ] Middleware updated (Option A or B) so `updateSession` runs where needed
+- [ ] (Optional) Regenerate `frontend/types/supabase.ts` after DB changes

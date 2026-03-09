@@ -1,73 +1,44 @@
 ---
 name: long-running-agent-loop
-description: Runs the agent in a loop until a verifiable goal is met (e.g. all tests pass, scratchpad contains DONE). Use when the user wants the agent to iterate until tests pass, until a checklist is complete, or to "keep going until done."
+description: Runs the agent in a loop until a verifiable goal is met. Use when the user says "iterate until tests pass", "keep going until it works", or "run until done."
 ---
 
 # Long-running agent loop
 
-Run the agent repeatedly until a **verifiable goal** is met. Uses `.cursor/scratchpad.md` for progress and a stop condition (e.g. tests pass or scratchpad contains `DONE`).
-
 ## When to use
 
-- User says "iterate until all tests pass", "keep going until it works", "run until done", or similar.
-- Task has a clear success signal: tests green, lint/type-check clean, or explicit "DONE" in scratchpad.
-
-## Setup (optional): hooks
-
-For fully autonomous looping, Cursor can run a **stop hook** after each agent turn. This requires the **Nightly** channel (Settings → Beta → Update channel → Nightly).
-
-1. Create `.cursor/hooks.json`:
-
-```json
-{
-  "version": 1,
-  "hooks": {
-    "stop": [{ "command": "node .cursor/hooks/grind.js" }]
-  }
-}
-```
-
-2. Create `.cursor/hooks/grind.js` (Node) or use the Bun/TS example in the Cursor blog. The script reads JSON from stdin and may output `{"followup_message": "…"}` to send a follow-up and continue the loop.
+Task has a clear success signal: tests green, lint clean, or explicit DONE in scratchpad.
 
 ## Scratchpad
 
-- **Path:** `.cursor/scratchpad.md`
-- **Purpose:** Agent-readable progress and completion signal.
-- **Stop condition:** When the scratchpad contains the line `DONE` (or the goal stated in the hook), the loop can stop.
+- Path: `.cursor/scratchpad.md`
+- Stop signal: agent writes `DONE` on its own line when goal is met.
 
-Example contents:
+## With hooks (Cursor Nightly)
 
-```markdown
-# Current task: Fix auth tests
+The `grind.js` stop hook re-fires the agent after each turn until DONE or max iterations.
+Set the goal clearly — verifiable end states only:
 
-- [x] Updated fixture in tests/test_auth.py
-- [x] Ran pytest tests/test_auth.py — 1 failure
-- [ ] Next: fix AssertionError in test_logout
+- ✅ "Run tests until all pass"
+- ✅ "Fix all TypeScript errors"
+- ❌ "Make the code better"
 
-DONE
-```
+## Without hooks (manual)
 
-Once the agent writes `DONE` (after tests pass and it’s satisfied), the stop hook can omit `followup_message` so the loop ends.
+1. Ask agent to work toward goal and update scratchpad each turn.
+2. When agent reports done, verify manually.
+3. If still failing, paste output: "Still failing: [output]. Continue and update scratchpad."
+4. Repeat until done.
 
-## Loop logic (for the hook script)
+## Best practices
 
-1. Read stdin JSON: `{ "conversation_id", "status", "loop_count", … }`.
-2. If `status !== "completed"` or `loop_count >= MAX_ITERATIONS` (e.g. 5–10), exit without output (stop looping).
-3. If goal is met (e.g. scratchpad contains `DONE`, or run tests and they pass), exit without output.
-4. Otherwise, output `{"followup_message": "…"}` with a short instruction, e.g.  
-   `"[Iteration N/M] Continue. Run tests and fix failures. Update .cursor/scratchpad.md with DONE when all tests pass."`
+- Verifiable goals only: tests, type-check, lint, DONE.
+- Plan first for larger tasks.
+- Start a new conversation when switching features.
 
-## Without hooks (manual loop)
+## Checklist
 
-If hooks are not available, the user can drive the loop manually:
-
-1. Ask the agent to work toward the goal and update `.cursor/scratchpad.md` with progress.
-2. When the agent says it’s done, run tests (or type-check) yourself.
-3. If they fail, say: "Tests still failing: [paste output]. Continue fixing and update the scratchpad."
-4. Repeat until tests pass, then ask the agent to write `DONE` in the scratchpad.
-
-## Best practices (from Cursor blog)
-
-- Prefer **verifiable goals**: tests, type-check, lint, or explicit DONE.
-- **Plan first** for larger tasks; refine the plan if the agent goes off track instead of only patching in chat.
-- **Start a new conversation** when switching to a different feature to keep context focused.
+- [ ] Goal is verifiable
+- [ ] Scratchpad initialized with goal and context
+- [ ] Agent updates scratchpad each iteration
+- [ ] DONE written only when goal is confirmed met

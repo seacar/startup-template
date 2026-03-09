@@ -4,6 +4,18 @@ const nextConfig = {
   // Partial Prerendering (PPR) is now enabled via cacheComponents
   // See: https://nextjs.org/docs/app/api-reference/next-config-js/cacheComponents
 
+  // Serve static homepage markdown with correct Content-Type for agents
+  async headers() {
+    return [
+      {
+        source: "/homepage.md",
+        headers: [
+          { key: "Content-Type", value: "text/markdown; charset=utf-8" },
+        ],
+      },
+    ];
+  },
+
   // Ensure environment variables are available
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
