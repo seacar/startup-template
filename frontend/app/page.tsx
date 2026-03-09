@@ -364,6 +364,58 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Why This Stack */}
+        <section className="max-w-7xl mx-auto px-6 py-12">
+          <div className="bg-white/90 backdrop-blur rounded-2xl shadow-lg border border-slate-200 p-8 md:p-10">
+            <div className="text-center mb-10">
+              <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3">
+                Why this tech stack is awesome
+              </h3>
+              <p className="text-slate-600 max-w-2xl mx-auto">
+                One template that gives you a production-grade foundation without the usual months of glue work.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="flex flex-col gap-3 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                  <FontAwesomeIcon icon={faRocket} className="text-white" />
+                </div>
+                <h4 className="font-bold text-slate-900">Ship in one place</h4>
+                <p className="text-sm text-slate-600">
+                  Web (Next.js), API (FastAPI), and mobile (Expo) in one repo. Shared types and patterns so you build features once and ship everywhere.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 p-4 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                  <FontAwesomeIcon icon={faCode} className="text-white" />
+                </div>
+                <h4 className="font-bold text-slate-900">Modern & proven</h4>
+                <p className="text-sm text-slate-600">
+                  React 19, Next.js 16, Tailwind 4, and FastAPI—battle-tested tools with great DX and long-term support, not flavor-of-the-month.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100">
+                <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                  <FontAwesomeIcon icon={faBrain} className="text-white" />
+                </div>
+                <h4 className="font-bold text-slate-900">AI-ready out of the box</h4>
+                <p className="text-sm text-slate-600">
+                  LangChain, LangGraph, Google GenAI, and pgvector are wired in. Add agents and RAG without rebuilding your backend.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 p-4 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                  <FontAwesomeIcon icon={faShieldAlt} className="text-white" />
+                </div>
+                <h4 className="font-bold text-slate-900">Production from day one</h4>
+                <p className="text-sm text-slate-600">
+                  Auth, RLS, migrations, rate limiting, and deployment configs for Railway, Vercel, and EAS. Focus on product, not plumbing.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Service URLs */}
         <section className="max-w-7xl mx-auto px-6 py-12">
           <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
